@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 #include "ht48.h"
+#include "smht48.h"
 
 int main(int argc, char **argv) {
     uint8_t h1[6];
