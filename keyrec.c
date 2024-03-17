@@ -14,13 +14,12 @@ void set_to_zero(char key [48], int i){
     key[i] = 0;
 }
 
-int verif(uint8_t h[static 6], uint8_t h_attendu[static 6]){
-    for (int i = 0; i < 6; i++) {
-        if (h[i] != h_attendu[i]) {
-            return 0;
-        }
-    }
-    return 1;
+int verif(uint8_t h[static 6], char *h_attendu){
+    char h2[12];
+    snprintf(h2, 12, "%02X%02X%02X%02X%02X%02X", h[0], h[1], h[2], h[3], h[4], h[5]);
+    printf("\nh2 : %s\n", h2);
+    printf("h_attendu : %s\n", h_attendu);
+    return strcmp(h2, h_attendu);
 }
 
 void convert(char key[48], uint8_t res[6]){
@@ -32,7 +31,8 @@ void convert(char key[48], uint8_t res[6]){
     }
 }
 
-int keyrec(uint64_t blen,const uint64_t msg[blen], uint8_t h_attendu[static 6]){
+int keyrec(uint64_t blen,const uint64_t msg[blen], char *h_attendu){
+    int tries = 0;
     char key[48];
     uint8_t c[6];
     reset_key(key);
@@ -53,8 +53,13 @@ int keyrec(uint64_t blen,const uint64_t msg[blen], uint8_t h_attendu[static 6]){
                                 set_to_one(key, o);
                                 convert(key, c);
                                 smht48(c, blen, (uint8_t*)msg, h);
-                                verif (h, h_attendu);
-                                if (verif(h, h_attendu)) {
+                                tries++;
+                                printf("Tries : %d\n", tries);
+                                if (verif(h, h_attendu)==0) {
+                                    printf("Key found : ");
+                                    for (int i = 0; i < 48; i++) {
+                                        printf("%d", key[i]);
+                                    }
                                     return 1;
                                 }
                                 set_to_zero(key, o);
