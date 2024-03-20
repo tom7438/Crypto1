@@ -1,8 +1,8 @@
 .PHONY:clean all
 
-CC=gcc
-CFLAGS=-Wall -Werror -g -O3 -fsanitize=address -fsanitize=undefined
-LFLAGS=-lm
+CC=clang
+CFLAGS=-Wall -Werror -g -O3 #-fsanitize=address -fsanitize=undefined
+LFLAGS=-lm #-fsanitize=address -fsanitize=undefined
 CPPFLAGS=-I./
 
 SRCS=$(wildcard *.c)
