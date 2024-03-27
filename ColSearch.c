@@ -113,7 +113,7 @@ void opAdd(uint8_t m1[static 16], uint8_t m2[static 16], uint8_t res[static 16])
         }
     }
 }
-
+/*
 void *searchCollision(void *arg) {
     ThreadData_t *data = (ThreadData_t *) arg;
     uint8_t h[6];
@@ -138,7 +138,7 @@ void *searchCollision(void *arg) {
         h[4] = IVB4;
         h[5] = IVB5;
 
-        /*
+
         pthread_mutex_lock(mutex);
         fprintf(stdout, "Thread %d\n", (int) pthread_self());
         fprintf(stdout, "Message: ");
@@ -147,7 +147,6 @@ void *searchCollision(void *arg) {
         }
         fprintf(stdout, "\n");
         pthread_mutex_unlock(mutex);
-         */
 
         tcz48_dm(m1, h);
 
@@ -237,6 +236,57 @@ int ColSearch() {
         pthread_join(threads[i], NULL);
     }
 
+    free(LlTab);
+    return 0;
+}
+*/
+
+int ColSearch() {
+    uint8_t m1[16];
+    //char hex[16];
+    for (int i = 0; i < 16; i++) {
+        m1[i] = 0;
+    }
+    // The collision search
+    uint8_t h[6];
+    // Initialiser la table de hash
+    LinkedList **LlTab = init_ll_tab(SIZE);
+
+    hash_table_t* res = NULL;
+
+    do {
+        //binToHex(m1, hex);
+        //printf("Message: %s\n", hex);
+        // Remettre le h à IV
+        h[0] = IVB0;
+        h[1] = IVB1;
+        h[2] = IVB2;
+        h[3] = IVB3;
+        h[4] = IVB4;
+        h[5] = IVB5;
+        tcz48_dm(m1, h);
+        res = insert_tuple(LlTab, h, m1, SIZE);
+        if (res != NULL) {
+            printf("Collision found\n");
+            break;
+        }
+        // Incrementer m1
+        incr(m1);
+    } while(1);
+
+    // Afficher les 2 messages ayant le même hash
+    if (res != NULL) {
+        printf("Message 1: ");
+        for (int i = 0; i < 16; i++) {
+            printf("%02X", res->m[i]);
+        }
+        printf("\n");
+        printf("Message 2: ");
+        for (int i = 0; i < 16; i++) {
+            printf("%02X", m1[i]);
+        }
+        printf("\n");
+    }
     free(LlTab);
     return 0;
 }
