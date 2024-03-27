@@ -5,21 +5,14 @@
 #include <stdint.h>
 #include "ht48.h"
 #include <pthread.h>
+#include "linkedList.h"
 
-hash_table_t *init_hash_table(uint32_t size) {
-    hash_table_t *ht = malloc(size * sizeof(hash_table_t));
-    if (ht == NULL) {
-        return NULL;
-    }
+LinkedList **init_ll_tab(uint32_t size) {
+    LinkedList **linkedList = (LinkedList **) malloc(sizeof(LinkedList*) * size);
     for (int i = 0; i < size; i++) {
-        for (int j = 0; j < 6; j++) {
-            ht[i].h[j] = 0;
-        }
-        for (int j = 0; j < 16; j++) {
-            ht[i].m[j] = 0;
-        }
+        linkedList[i] = createLinkedList();
     }
-    return ht;
+    return linkedList;
 }
 
 int verif2hash(uint8_t h1[static 6], uint8_t h2[static 6]) {
@@ -40,38 +33,27 @@ int verif2message(uint8_t m1[static 16], uint8_t m2[static 16]) {
     return 0;
 }
 
-int insert_hash_table(hash_table_t *ht, uint8_t h[static 6], uint8_t m[static 16], uint32_t size) {
-    for (int i = 0; i < size; i++) {
-        // Si ht.h et h sont égaux
-        if (verif2hash(ht[i].h, h) == 0) {
-            return 1;
-        }
-        // Si ht.h est vide
-        if (verif2hash(ht[i].h, (uint8_t[6]) {0, 0, 0, 0, 0, 0}) == 0) {
-            for (int j = 0; j < 6; j++) {
-                ht[i].h[j] = h[j];
-            }
-            for (int j = 0; j < 16; j++) {
-                ht[i].m[j] = m[j];
-            }
-            return 0;
-        }
-        // Si la table est pleine
-        if (i == size - 1) {
-            return -2;
-        }
-    }
-    return -1;
+uint32_t convertHash(uint8_t h[static 3]) {
+    return (h[0] << 16) | (h[1] << 8) | h[2];
 }
 
-int search_hash_table(hash_table_t *ht, uint8_t h[static 6], uint32_t size) {
-    for (int i = 0; i < size; i++) {
-        // Si ht.h et h sont égaux
-        if (verif2hash(ht[i].h, h) == 0) {
-            return i;
-        }
+
+hash_table_t *insert_tuple(LinkedList** ll, uint8_t h[static 6], uint8_t m[static 16], uint32_t size) {
+    uint8_t new_hash[3] = {h[4], h[5], h[6]};
+    hash_table_t *new_ht = malloc(sizeof(hash_table_t));
+    for (int i = 0; i < 6; i++) {
+        new_ht->h[i] = h[i];
     }
-    return -1;
+    for (int i = 0; i < 16; i++) {
+        new_ht->m[i] = m[i];
+    }
+
+    hash_table_t *res = addNode(ll[convertHash(new_hash)], new_ht);
+    if (res != NULL) {
+        printf("Collision found\n");
+        return res;
+    }
+    return NULL;
 }
 
 void incr(uint8_t *m) {
@@ -136,9 +118,11 @@ void *searchCollision(void *arg) {
     ThreadData_t *data = (ThreadData_t *) arg;
     uint8_t h[6];
     uint8_t m1[16];
-    hash_table_t *ht = data->ht;
+    LinkedList **LlTab = data->LlTab;
     pthread_mutex_t *mutex = data->mutex;
     uint8_t fin[16];
+
+    hash_table_t *res;
 
     for (int i = 0; i < 16; i++) {
         m1[i] = data->m[i];
@@ -168,34 +152,24 @@ void *searchCollision(void *arg) {
         tcz48_dm(m1, h);
 
         pthread_mutex_lock(mutex);
-        int ret = insert_hash_table(ht, h, m1, SIZE);
+        res = insert_tuple(LlTab, h, m1, SIZE);
         pthread_mutex_unlock(mutex);
 
-        if (ret == 1) {
-            // Collision found
+        if (res != NULL) {
             printf("Collision found\n");
             getchar();
             break;
-        } else if (ret == -2) {
-            // Table is full
-            printf("Table is full\n");
-            getchar();
-            break;
         }
-
 
         // Incrementer m1
         incr(m1);
     } while (verif2message(m1, fin) != 0);
 
     // Afficher les 2 messages ayant le même hash
-    pthread_mutex_lock(mutex);
-    int pos = search_hash_table(ht, h, SIZE);
-    pthread_mutex_unlock(mutex);
-    if (pos != -1) {
+    if (res != NULL) {
         printf("Message 1: ");
         for (int i = 0; i < 16; i++) {
-            printf("%02X", ht[pos].m[i]);
+            printf("%02X", res->m[i]);
         }
         printf("\n");
         printf("Message 2: ");
@@ -233,7 +207,8 @@ int ColSearch() {
     getchar();
 
     // Initialiser la table de hash
-    hash_table_t *ht = init_hash_table(SIZE);
+    LinkedList **LlTab = init_ll_tab(SIZE);
+
 
     pthread_t threads[THREADS];
     pthread_mutex_t mutex;
@@ -242,7 +217,7 @@ int ColSearch() {
 
     ThreadData_t data[THREADS];
     for (int i = 0; i < THREADS; i++) {
-        data[i].ht = ht;
+        data[i].LlTab = LlTab;
         for (int j = 0; j < 16; j++) {
             data[i].m[j] = m1[j];
         }
@@ -262,69 +237,6 @@ int ColSearch() {
         pthread_join(threads[i], NULL);
     }
 
-    free(ht);
+    free(LlTab);
     return 0;
 }
-
-/* Old implementation
-int ColSearch() {
-    uint8_t m1[16];
-    //char hex[16];
-
-    for (int i = 0; i < 16; i++) {
-        m1[i] = 0;
-    }
-
-    // The collision search
-    uint8_t h[6];
-
-    // Initialiser la table de hash
-    hash_table_t *ht = init_hash_table(SIZE);
-
-    do {
-        //binToHex(m1, hex);
-        //printf("Message: %s\n", hex);
-        // Remettre le h à IV
-        h[0] = IVB0;
-        h[1] = IVB1;
-        h[2] = IVB2;
-        h[3] = IVB3;
-        h[4] = IVB4;
-        h[5] = IVB5;
-
-        tcz48_dm(m1, h);
-        int ret = insert_hash_table(ht, h, m1, SIZE);
-
-        if (ret == 1) {
-            // Collision found
-            printf("Collision found\n");
-            break;
-        } else if (ret == -2) {
-            // Table is full
-            printf("Table is full\n");
-            break;
-        }
-
-        // Incrementer m1
-        incr(m1);
-    } while(1);
-
-    // Afficher les 2 messages ayant le même hash
-    int pos = search_hash_table(ht, h, SIZE);
-    if (pos != -1) {
-        printf("Message 1: ");
-        for (int i = 0; i < 16; i++) {
-            printf("%02X", ht[pos].m[i]);
-        }
-        printf("\n");
-        printf("Message 2: ");
-        for (int i = 0; i < 16; i++) {
-            printf("%02X", m1[i]);
-        }
-        printf("\n");
-    }
-
-    free(ht);
-    return 0;
-}
-*/
