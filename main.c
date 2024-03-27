@@ -6,12 +6,15 @@
 #include "ht48.h"
 #include "smht48.h"
 #include "keyrec.h"
+#include "ColSearch.h"
 
 int main(int argc, char **argv) {
     //smht48_test();
-    uint8_t m[6] = {9, 8, 7, 6, 5, 4};
-    uint8_t blen = sizeof(m);
+    //uint8_t m[6] = {9, 8, 7, 6, 5, 4};
+    //uint8_t blen = sizeof(m);
 
-    keyrec(blen, m);
+    //keyrec(blen, m);
+
+    ColSearch();
     return 0;
 }

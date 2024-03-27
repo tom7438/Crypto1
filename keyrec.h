@@ -1,3 +1,6 @@
+#ifndef __keyrec_H
+#define __keyrec_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -21,3 +24,5 @@ int verif(uint8_t h[static 6], char *h_attendu);
 
 // Renvoie le nb de clés trouvées
 int keyrec(uint64_t blen,const uint8_t msg[blen]);
+
+#endif
