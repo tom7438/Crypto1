@@ -12,9 +12,15 @@ LinkedList *createLinkedList(){
 hash_table_t* addNode(LinkedList *list, hash_table_t* data){
     Noeud *newNode = (Noeud *)malloc(sizeof(Noeud));
     newNode->data = data;
+    newNode->next = NULL;
+
+    if(list->head == NULL){
+        list->head = newNode;
+        return NULL;
+    }
 
     Noeud *current = list->head;
-    while(current != NULL){
+    while(current->next != NULL){
         for (int i = 0; i < 6; i++) {
             if(current->data->h[i] != data->h[i]){
                 break;
@@ -26,7 +32,6 @@ hash_table_t* addNode(LinkedList *list, hash_table_t* data){
         }
         current = current->next;
     }
-    
-    list->head = newNode;
+    current->next = newNode;
     return NULL;
 }
