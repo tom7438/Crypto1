@@ -131,136 +131,10 @@ void opAdd(uint8_t m1[static 16], uint8_t m2[static 16], uint8_t res[static 16])
     }
 }
 
-/*
-void *searchCollision(void *arg) {
-    ThreadData_t *data = (ThreadData_t *) arg;
-    uint8_t h[6];
-    uint8_t m1[16];
-    LinkedList **LlTab = data->LlTab;
-    pthread_mutex_t *mutex = data->mutex;
-    uint8_t fin[16];
-
-    hash_table_t *res;
-
-    for (int i = 0; i < 16; i++) {
-        m1[i] = data->m[i];
-        fin[i] = data->fin[i];
-    }
-
-    do {
-        // Remettre le h à IV
-        h[0] = IVB0;
-        h[1] = IVB1;
-        h[2] = IVB2;
-        h[3] = IVB3;
-        h[4] = IVB4;
-        h[5] = IVB5;
-
-        //pthread_mutex_lock(mutex);
-        //fprintf(stdout, "Thread %d\n", (int) pthread_self());
-        //fprintf(stdout, "Message: ");
-        //for (int i = 0; i < 16; i++) {
-            //fprintf(stdout, "%02X", m1[i]);
-        //}
-        //fprintf(stdout, "\n");
-        //pthread_mutex_unlock(mutex);
-
-
-        tcz48_dm(m1, h);
-
-        pthread_mutex_lock(mutex);
-        res = insert_tuple(LlTab, h, m1, SIZE);
-        pthread_mutex_unlock(mutex);
-
-        if (res != NULL) {
-            printf("Collision found\n");
-            getchar();
-            break;
-        }
-
-        // Incrementer m1
-        incr(m1);
-    } while (verif2message(m1, fin) != 0);
-
-    // Afficher les 2 messages ayant le même hash
-    if (res != NULL) {
-        fprintf(stdout, "Message 1: ");
-        for (int i = 0; i < 16; i++) {
-            fprintf(stdout,"%02X", res->m[i]);
-        }
-        fprintf(stdout,"\n");
-        fprintf(stdout,"Message 2: ");
-        for (int i = 0; i < 16; i++) {
-            fprintf(stdout,"%02X", m1[i]);
-        }
-        fprintf(stdout,"\n");
-    }
-
-    pthread_exit(NULL);
-}
-
-int ColSearch() {
-    uint8_t m1[16];
-    uint8_t fin[16];
-    uint8_t currentFin[16];
-
-    for (int i = 0; i < 16; i++) {
-        m1[i] = 0;
-    }
-
-    // Max
-    uint8_t max[16];
-    for (int i = 0; i < 16; i++) {
-        max[i] = 0xFF;
-    }
-
-    opDiv(max, fin, THREADS/2);
-    //fprintf(stdout, "Fin: ");
-    for (int j = 0; j < 16; j++) {
-        //fprintf(stdout, "%02X", fin[j]);
-        currentFin[j] = fin[j];
-    }
-    //fprintf(stdout, "\n");
-    //getchar();
-
-    // Initialiser la table de hash
-    LinkedList **LlTab = init_ll_tab(SIZE);
-
-
-    pthread_t threads[THREADS];
-    pthread_mutex_t mutex;
-    pthread_mutex_init(&mutex, NULL);
-
-
-    ThreadData_t data[THREADS];
-    for (int i = 0; i < THREADS; i++) {
-        data[i].LlTab = LlTab;
-        for (int j = 0; j < 16; j++) {
-            data[i].m[j] = m1[j];
-        }
-        for (int j = 0; j < 16; j++) {
-            data[i].fin[j] = currentFin[j];
-        }
-        data[i].mutex = &mutex;
-        pthread_create(&threads[i], NULL, searchCollision, &data[i]);
-        incr(currentFin);
-        for (int j = 0; j < 16; j++) {
-            m1[j] = currentFin[j];
-        }
-        opAdd(m1, fin, currentFin);
-    }
-
-    for (int i = 0; i < THREADS; i++) {
-        pthread_join(threads[i], NULL);
-    }
-
-    free(LlTab);
-    return 0;
-}
-*/
 
 
 int ColSearch() {
+    printf("\n\033[34;01m------COLLISION SEARCH------\033[00m\n\n");
     uint8_t m1[16];
     // Init message à que des 0
     for (int i = 0; i < 16; i++) {
@@ -313,6 +187,7 @@ int ColSearch() {
 
 
 void smht48ef(uint8_t *m1, uint8_t *h1, uint8_t *m2, uint8_t *h2) {
+    printf("\n\033[34;01m----------SMHT48EF----------\033[00m\n");
     uint8_t key1 [6];
     srand(time(NULL));
     for (int i = 0; i < 6; i++) {
@@ -321,11 +196,11 @@ void smht48ef(uint8_t *m1, uint8_t *h1, uint8_t *m2, uint8_t *h2) {
     smht48(key1, 16, m1, h1);
     smht48(key1, 16, m2, h2);
 
-    printf("[SMHT48 EF] Hash de m1 : ");
+    printf("\nHash de m1 : ");
     printhash(h1);
     printf("\n");   
 
-    printf("[SMHT48 EF] Hash de m2 : ");
+    printf("Hash de m2 : ");
     printhash(h2);
     printf("\n");
 

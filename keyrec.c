@@ -54,6 +54,7 @@ int verif(uint8_t h[6], char *h_attendu){
 }
 
 int keyrec(uint64_t blen,const uint8_t msg[blen]){
+    printf("\n\033[34;01m-----------KEYREC-----------\033[00m\n\n");
     char key[48];
     reset_key(key);
     uint8_t h[6];
