@@ -40,7 +40,7 @@ uint32_t convertHash(uint8_t h[static 3]) {
 
 
 hash_table_t *insert_tuple(LinkedList **ll, uint8_t h[static 6], uint8_t m[static 16], uint32_t size) {
-    uint8_t new_hash[3] = {h[4], h[5], h[6]};
+    uint8_t new_hash[3] = {h[0], h[1], h[2]};
     hash_table_t *new_ht = malloc(sizeof(hash_table_t));
     for (int i = 0; i < 6; i++) {
         new_ht->h[i] = h[i];
@@ -59,16 +59,17 @@ hash_table_t *insert_tuple(LinkedList **ll, uint8_t h[static 6], uint8_t m[stati
 
 void incr(uint8_t *m) {
     int i = 0;
-    while (i < 16) {
-        if (m[15 - i] == 0xFF) {
-            m[15 - i] = 0;
-            i++;
-        } else {
-            m[15 - i]++;
-            break;
-        }
-    }
-    /*
+    // Incremente par le bit de poids faible
+    // while (i < 16) {
+    //     if (m[15 - i] == 0xFF) {
+    //         m[15 - i] = 0;
+    //         i++;
+    //     } else {
+    //         m[15 - i]++;
+    //         break;
+    //     }
+    // }
+    // Incrémente par le bit de poids fort
     while (i < 16) {
         if (m[i] == 0xFF) {
             m[i] = 0;
@@ -78,7 +79,7 @@ void incr(uint8_t *m) {
             break;
         }
     }
-     */
+    
 }
 
 void decr(uint8_t *m) {
