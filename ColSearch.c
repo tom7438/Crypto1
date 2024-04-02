@@ -7,6 +7,9 @@
 #include <pthread.h>
 #include "linkedList.h"
 #include <unistd.h>
+#include <time.h>
+#include "smht48.h"
+
 
 LinkedList **init_ll_tab(uint32_t size) {
     LinkedList **linkedList = (LinkedList **) malloc(sizeof(LinkedList *) * size);
@@ -306,4 +309,25 @@ int ColSearch() {
     printf("\n");
     free(LlTab);
     return 0;
+}
+
+
+void smht48ef(uint8_t *m1, uint8_t *h1, uint8_t *m2, uint8_t *h2) {
+    uint8_t key1 [6];
+    srand(time(NULL));
+    for (int i = 0; i < 6; i++) {
+        key1[i] = rand() % 256;
+    }
+    smht48(key1, 16, m1, h1);
+    smht48(key1, 16, m2, h2);
+
+    printf("[SMHT48 EF] Hash de m1 : ");
+    printhash(h1);
+    printf("\n");   
+
+    printf("[SMHT48 EF] Hash de m2 : ");
+    printhash(h2);
+    printf("\n");
+
+    
 }

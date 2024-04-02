@@ -62,6 +62,8 @@ typedef struct ThreadData_s {
  */
 void *searchCollision(void *arg);
 
+void smht48ef(uint8_t *m1, uint8_t *h1, uint8_t *m2, uint8_t *h2);
+
 #define THREADS (1 << 7)
 
 #endif //CRYPTO1_COLSEARCH_H

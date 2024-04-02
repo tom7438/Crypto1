@@ -27,6 +27,7 @@ int main(int argc, char **argv) {
     uint8_t m2[16] = {0x21, 0x8F, 0x3E, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,};
     uint8_t h2[6] = {IVB0, IVB1, IVB2, IVB3, IVB4, IVB5};
 
+
     tcz48_dm(m1, h1);
     printf("Hash de m1 : ");
     printhash(h1);
@@ -36,6 +37,18 @@ int main(int argc, char **argv) {
     tcz48_dm(m2, h2);
     printhash(h2);
     printf("\n");
+
+    uint8_t h_rand1 [6];
+    uint8_t h_rand2 [6];
+
+    for (int i = 0; i < 6; i++) {
+        h_rand1[i] = rand() % 256;
+        h_rand2[i] = rand() % 256;
+    }
+
+
+    smht48ef(m1, h_rand1, m2, h_rand2);
+
 
 
 
