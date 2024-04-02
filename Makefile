@@ -1,7 +1,7 @@
 .PHONY:clean all
 
 CC=clang
-CFLAGS=-Wall -Werror -g #O3 #-g -O3 #-fsanitize=address -fsanitize=undefined
+CFLAGS=-Wall -Werror -O3 #-g -O3 #-fsanitize=address -fsanitize=undefined
 LFLAGS=-lm #-fsanitize=address -fsanitize=undefined
 CPPFLAGS=-I./
 
