@@ -59,6 +59,7 @@ hash_table_t *insert_tuple(LinkedList** ll, uint8_t h[static 6], uint8_t m[stati
 
 void incr(uint8_t *m) {
     int i = 0;
+    // Augmenter par le bit de poids faible
     // while (i < 16) {
     //     if (m[15-i] == 0xFF) {
     //         m[15-i] = 0;
@@ -68,6 +69,7 @@ void incr(uint8_t *m) {
     //         break;
     //     }
     // }
+    // Augmenter par le bit de poids fort
     while (i < 16) {
         if (m[i] == 0xFF) {
             m[i] = 0;
