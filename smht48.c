@@ -23,7 +23,7 @@ void smht48_test() {
     uint8_t key2[6] = {0xE4, 0x16, 0x9F, 0x12, 0xD3, 0xBA};
     uint64_t blen = sizeof(m);
 
-    printf("blen = %lu\n", blen);
+    printf("blen = %llu\n", blen);
 
     smht48(key1, blen, m, h1);
     printhash(h1);
