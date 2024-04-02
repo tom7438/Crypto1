@@ -128,7 +128,7 @@ void opAdd(uint8_t m1[static 16], uint8_t m2[static 16], uint8_t res[static 16])
     }
 }
 
-
+/*
 void *searchCollision(void *arg) {
     ThreadData_t *data = (ThreadData_t *) arg;
     uint8_t h[6];
@@ -153,17 +153,15 @@ void *searchCollision(void *arg) {
         h[4] = IVB4;
         h[5] = IVB5;
 
+        //pthread_mutex_lock(mutex);
+        //fprintf(stdout, "Thread %d\n", (int) pthread_self());
+        //fprintf(stdout, "Message: ");
+        //for (int i = 0; i < 16; i++) {
+            //fprintf(stdout, "%02X", m1[i]);
+        //}
+        //fprintf(stdout, "\n");
+        //pthread_mutex_unlock(mutex);
 
-        /*
-        pthread_mutex_lock(mutex);
-        fprintf(stdout, "Thread %d\n", (int) pthread_self());
-        fprintf(stdout, "Message: ");
-        for (int i = 0; i < 16; i++) {
-            fprintf(stdout, "%02X", m1[i]);
-        }
-        fprintf(stdout, "\n");
-        pthread_mutex_unlock(mutex);
-         */
 
         tcz48_dm(m1, h);
 
@@ -181,25 +179,18 @@ void *searchCollision(void *arg) {
         incr(m1);
     } while (verif2message(m1, fin) != 0);
 
-    FILE *fout = fopen("output.txt", "a");
-
-    if (fout == NULL) {
-        fprintf(stderr, "Error opening file\n");
-        exit(1);
-    }
-
     // Afficher les 2 messages ayant le même hash
     if (res != NULL) {
-        fprintf(fout, "Message 1: ");
+        fprintf(stdout, "Message 1: ");
         for (int i = 0; i < 16; i++) {
-            fprintf(fout,"%02X", res->m[i]);
+            fprintf(stdout,"%02X", res->m[i]);
         }
-        fprintf(fout,"\n");
-        fprintf(fout,"Message 2: ");
+        fprintf(stdout,"\n");
+        fprintf(stdout,"Message 2: ");
         for (int i = 0; i < 16; i++) {
-            fprintf(fout,"%02X", m1[i]);
+            fprintf(stdout,"%02X", m1[i]);
         }
-        fprintf(fout,"\n");
+        fprintf(stdout,"\n");
     }
 
     pthread_exit(NULL);
@@ -263,32 +254,23 @@ int ColSearch() {
     free(LlTab);
     return 0;
 }
+*/
 
-/*
+
 int ColSearch() {
     uint8_t m1[16];
-    char hex[16];
     // Init message à que des 0
     for (int i = 0; i < 16; i++) {
         m1[i] = 0;
     }
     // The collision search
     uint8_t h[6];
-
-    // Max
-    uint8_t max[16];
-    for (int i = 0; i < 16; i++) {
-        max[i] = 0xFF;
-    }
-
     // Initialiser la table de hash
     LinkedList **LlTab = init_ll_tab(SIZE);
 
-    hash_table_t* res = NULL;
+    hash_table_t *res = NULL;
 
     do {
-        binToHex(m1, hex);
-        printf("Message: %s\n", hex);
         // Remettre le h à IV
         h[0] = IVB0;
         h[1] = IVB1;
@@ -304,22 +286,24 @@ int ColSearch() {
         }
         // Incrementer m1
         incr(m1);
-    } while(verif2message(m1, max) != 0);
+        // printf("m1: ");
+        // for (int i = 0; i < 16; i++) {
+        //     printf("%02X", m1[i]);
+        // }
+        // printf("\n");
+    } while (1);
 
     // Afficher les 2 messages ayant le même hash
-    if (res != NULL) {
-        printf("Message 1: ");
-        for (int i = 0; i < 16; i++) {
-            printf("%02X", res->m[i]);
-        }
-        printf("\n");
-        printf("Message 2: ");
-        for (int i = 0; i < 16; i++) {
-            printf("%02X", m1[i]);
-        }
-        printf("\n");
+    printf("Message 1: ");
+    for (int i = 0; i < 16; i++) {
+        printf("%02X", res->m[i]);
     }
+    printf("\n");
+    printf("Message 2: ");
+    for (int i = 0; i < 16; i++) {
+        printf("%02X", m1[i]);
+    }
+    printf("\n");
     free(LlTab);
     return 0;
 }
- */

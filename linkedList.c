@@ -3,35 +3,30 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-LinkedList *createLinkedList(){
-    LinkedList *list = (LinkedList *)malloc(sizeof(LinkedList));
+LinkedList *createLinkedList() {
+    LinkedList *list = (LinkedList *) malloc(sizeof(LinkedList));
     list->head = NULL;
     return list;
 }
 
-hash_table_t* addNode(LinkedList *list, hash_table_t* data){
-    Noeud *newNode = (Noeud *)malloc(sizeof(Noeud));
+hash_table_t *addNode(LinkedList *list, hash_table_t *data) {
+    Noeud *newNode = (Noeud *) malloc(sizeof(Noeud));
     newNode->data = data;
-    newNode->next = NULL;
-
-    if(list->head == NULL){
-        list->head = newNode;
-        return NULL;
-    }
 
     Noeud *current = list->head;
-    while(current->next != NULL){
+    while (current != NULL) {
         for (int i = 0; i < 6; i++) {
-            if(current->data->h[i] != data->h[i]){
+            if (current->data->h[i] != data->h[i]) {
                 break;
             }
-            if(i == 5){
+            if (i == 5) {
                 printf("Hash trouvé\n");
                 return current->data;
             }
         }
         current = current->next;
     }
-    current->next = newNode;
+    newNode->next = list->head;
+    list->head = newNode;
     return NULL;
 }
