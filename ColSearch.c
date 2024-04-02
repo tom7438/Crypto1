@@ -40,7 +40,7 @@ uint32_t convertHash(uint8_t h[static 3]) {
 
 
 hash_table_t *insert_tuple(LinkedList** ll, uint8_t h[static 6], uint8_t m[static 16], uint32_t size) {
-    uint8_t new_hash[3] = {h[4], h[5], h[6]};
+    uint8_t new_hash[3] = {h[0], h[1], h[2]};
     hash_table_t *new_ht = malloc(sizeof(hash_table_t));
     for (int i = 0; i < 6; i++) {
         new_ht->h[i] = h[i];
@@ -155,12 +155,11 @@ int ColSearch() {
         }
         // Incrementer m1
         incr(m1);
-        printf("m1: ");
-        for (int i = 0; i < 16; i++) {
-            printf("%02X", m1[i]);
-        }
-        printf("\n");
-        usleep(1);
+        // printf("m1: ");
+        // for (int i = 0; i < 16; i++) {
+        //     printf("%02X", m1[i]);
+        // }
+        // printf("\n");
     } while(1);
 
     // Afficher les 2 messages ayant le même hash

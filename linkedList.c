@@ -26,7 +26,7 @@ hash_table_t* addNode(LinkedList *list, hash_table_t* data){
         }
         current = current->next;
     }
-    
+    newNode->next = list->head;
     list->head = newNode;
     return NULL;
 }
