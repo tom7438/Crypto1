@@ -79,7 +79,6 @@ void incr(uint8_t *m) {
             break;
         }
     }
-    
 }
 
 void decr(uint8_t *m) {
